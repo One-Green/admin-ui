@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: core-ui
+  labels:
+    app: core-ui
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: core-ui
+      labels:
+        app: core-ui
+    spec:
+      containers:
+        - name: core-ui
+          image: docker.io/shanisma/k8s-one-green-admin-ui:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8501
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: core-ui
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: core-ui
+spec:
+  selector:
+    app: core-ui
+  ports:
+    - port: 8501
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: api
+spec:
+  rules:
+    - host: sprinkler-ui.010e7d5e-3a86-4c87-a4bc-8d7a82bf5d2e.nodes.k8s.fr-par.scw.cloud
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: core-ui
+                port:
+                  number: 8501
