@@ -14,7 +14,7 @@ else:
     sprinkler = st.radio('Available sprinkler(s) ', ["not tag found, create a tag "])
     sprinkler_config = {
         "soil_moisture_min_level": 20.,
-        "soil_moisture_max_level": 70
+        "soil_moisture_max_level": 70.
     }
 
 tag = st.text_input("Add new tag", sprinkler)
