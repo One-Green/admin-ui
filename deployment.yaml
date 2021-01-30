@@ -16,6 +16,11 @@ spec:
         - name: core-ui
           image: docker.io/shanisma/k8s-one-green-admin-ui:latest
           imagePullPolicy: Always
+          command: ['/bin/bash', '-c']
+          args: [ "streamlit run sprinklers.py" ]
+          env:
+            - name: ONE_GREEN_CORE_API
+              value: "http://api:8080"
           ports:
             - containerPort: 8501
       restartPolicy: Always
@@ -37,7 +42,7 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: api
+  name: core-ui
 spec:
   rules:
     - host: sprinkler-ui.010e7d5e-3a86-4c87-a4bc-8d7a82bf5d2e.nodes.k8s.fr-par.scw.cloud
