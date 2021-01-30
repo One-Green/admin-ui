@@ -75,6 +75,7 @@ def sprinklers_settings(state):
             st.success("Tag created")
         if configuration_result:
             st.success("Configuration saved")
+            st.experimental_rerun()
         else:
             st.error("Can not save this configuration")
 
@@ -86,11 +87,12 @@ def sprinklers_settings(state):
                     SPRINKLER_REGISTRY,
                     sprinkler
             ):
-                st.success("Delete successfully")
+                st.success("Successfully Delete")
+                st.experimental_rerun()
             else:
                 st.warning("Can not delete this tag: maybe already deleted")
         else:
-            st.error("Please confirm deletion by writing sprinkler tag")
+            st.error("Please select good tag and confirm deletion by writing sprinkler tag")
 
 
 # def lights_settings(state):
