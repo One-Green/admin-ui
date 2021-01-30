@@ -17,7 +17,7 @@ spec:
           image: docker.io/shanisma/k8s-one-green-admin-ui:latest
           imagePullPolicy: Always
           command: ['/bin/bash', '-c']
-          args: [ "streamlit run sprinklers.py" ]
+          args: [ "streamlit run ui.py" ]
           env:
             - name: ONE_GREEN_CORE_API
               value: "http://api:8080"
