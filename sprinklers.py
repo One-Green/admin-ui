@@ -1,3 +1,11 @@
+"""
+Sprinklers configuration ui
+
+Author : Vigneswaran Shanmugathas
+mail: shanmugathas.vigneswaran@outlook.fr
+
+"""
+
 from settings import *
 from core.api import sprinklers
 import streamlit as st
