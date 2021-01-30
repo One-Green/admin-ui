@@ -5,8 +5,17 @@ import streamlit as st
 st.title("Sprinklers Configuration")
 
 st.header('Create new sprinkler / configure existing')
-sprinkler = st.radio('Available sprinkler(s) ', sprinklers.get_tags(SPRINKLER_REGISTRY))
-sprinkler_config = sprinklers.get_configuration(SPRINKLER_CONFIGURATION, sprinkler)
+sprinklers_tag_list: list = sprinklers.get_tags(SPRINKLER_REGISTRY)
+
+if sprinklers_tag_list:
+    sprinkler = st.radio('Available sprinkler(s) ', sprinklers_tag_list)
+    sprinkler_config = sprinklers.get_configuration(SPRINKLER_CONFIGURATION, sprinkler)
+else:
+    sprinkler = st.radio('Available sprinkler(s) ', ["not tag found, create a tag "])
+    sprinkler_config = {
+        "soil_moisture_min_level": 20.,
+        "soil_moisture_max_level": 70
+    }
 
 tag = st.text_input("Add new tag", sprinkler)
 min_moisture = st.text_input("Minimum moisture level", sprinkler_config["soil_moisture_min_level"])
@@ -27,7 +36,6 @@ if st.button("Create tag and save sprinkler settings"):
         st.success("Configuration saved")
     else:
         st.error("Can not save this configuration")
-
 
 st.header('Delete existing tag and configuration')
 confirm_delete = st.text_input("To delete confirm by writing sprinkler tag here")
