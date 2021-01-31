@@ -11,6 +11,8 @@ from streamlit.report_thread import get_report_ctx
 from streamlit.server.server import Server
 from settings import *
 from core.api import sprinklers
+from core.api import water
+import time
 
 
 def main():
@@ -41,6 +43,23 @@ def home(state):
 
 def water_tank_settings(state):
     st.title(":droplet: Water tank Settings")
+    water_configuration = water.get_configuration(WATER_CONFIGURATION)
+    tds_min_level = st.text_input("Tds min level (ppm)", water_configuration["tds_min_level"])
+    tds_max_level = st.text_input("Tds max level (ppm)", water_configuration["tds_max_level"])
+    ph_min_level = st.text_input("pH min level", water_configuration["ph_min_level"])
+    ph_max_level = st.text_input("pH max level", water_configuration["ph_max_level"])
+    if st.button("Save configuration") and water.post_configuration(
+            WATER_CONFIGURATION,
+            {
+                "tds_min_level": float(tds_min_level),
+                "tds_max_level": float(tds_max_level),
+                "ph_min_level": float(ph_min_level),
+                "ph_max_level": float(ph_max_level)
+            }
+    ):
+        st.success("Configuration saved")
+        time.sleep(0.5)
+        st.experimental_rerun()
 
 
 def sprinklers_settings(state):
@@ -72,8 +91,10 @@ def sprinklers_settings(state):
             }
         )
         if tag_result:
+            time.sleep(0.5)
             st.success("Tag created")
         if configuration_result:
+            time.sleep(0.5)
             st.success("Configuration saved")
             st.experimental_rerun()
         else:
