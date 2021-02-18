@@ -72,7 +72,6 @@ def get_configuration(
     :param _basic_auth:
     :return:
     """
-    r = {}
     _api = os.path.join(api, sprinkler_tag)
     try:
         if _basic_auth:
