@@ -12,7 +12,9 @@ from streamlit.server.server import Server
 from settings import *
 from core.api import sprinklers
 from core.api import water
+from core.api import light
 import time
+import datetime
 
 
 def main():
@@ -21,7 +23,7 @@ def main():
         "Home": home,
         "Water tank": water_tank_settings,
         "Sprinklers": sprinklers_settings,
-        # "Uv Light": lights_settings,
+        "Uv Lights": lights_settings,
         # "Air temperature": air_settings,
         # "Air humidity": air_humidity
     }
@@ -63,6 +65,9 @@ def water_tank_settings(state):
 
 
 def sprinklers_settings(state):
+    """
+    TODO: reduce cognitive complexity
+    """
     st.title(":potable_water: Sprinklers Settings")
     st.header('Create new sprinkler / configure existing')
     sprinklers_tag_list: list = sprinklers.get_tags(SPRINKLER_REGISTRY)
@@ -80,7 +85,7 @@ def sprinklers_settings(state):
     tag = st.text_input("Add new tag / configure existing", sprinkler)
     min_moisture = st.text_input("Minimum moisture level", sprinkler_config["soil_moisture_min_level"])
     max_moisture = st.text_input("Maximum moisture level", sprinkler_config["soil_moisture_max_level"])
-    if st.button("Create tag and save sprinkler settings"):
+    if st.button("(Create tag and) save sprinkler settings"):
         tag_result = sprinklers.create_tag(SPRINKLER_REGISTRY, tag)
         configuration_result = sprinklers.post_configuration(
             SPRINKLER_CONFIGURATION,
@@ -116,10 +121,63 @@ def sprinklers_settings(state):
             st.error("Please select good tag and confirm deletion by writing sprinkler tag")
 
 
-# def lights_settings(state):
-#     st.title("UV Light settings")
-#
-#
+def lights_settings(state):
+    """
+    TODO: reduce cognitive complexity
+    """
+    st.title(":bulb: UV Light Settings")
+    st.header('Create new light / configure existing')
+    lights_tag_list: list = light.get_tags(LIGHT_REGISTRY)
+
+    if lights_tag_list:
+        _light = st.radio('Available light(s) ', lights_tag_list)
+        light_config = light.get_configuration(LIGHT_CONFIGURATION, _light)
+    else:
+        _light = st.radio('Available light(s) ', ["not tag found, create a tag "])
+        light_config = {
+            "on_time_at": datetime.time(8, 0),
+            "off_time_at": datetime.time(18, 0),
+        }
+
+    tag = st.text_input("Add new tag / configure existing", _light)
+    on_time_at = st.time_input("Light on from", light_config["on_time_at"])
+    off_time_at = st.time_input("Light on to", light_config["off_time_at"])
+    if st.button("(Create tag and) save light settings"):
+        tag_result = light.create_tag(LIGHT_REGISTRY, tag)
+        configuration_result = light.post_configuration(
+            LIGHT_CONFIGURATION,
+            tag,
+            config={
+                "on_time_at": on_time_at,
+                "off_time_at": off_time_at
+            }
+        )
+        if tag_result:
+            time.sleep(0.5)
+            st.success("Tag created")
+        if configuration_result:
+            time.sleep(0.5)
+            st.success("Configuration saved")
+            st.experimental_rerun()
+        else:
+            st.error("Can not save this configuration")
+
+    st.header('Delete existing tag and configuration')
+    confirm_delete = st.text_input("To delete confirm by writing sprinkler tag here")
+    if st.button("Delete this sprinkler"):
+        if _light == confirm_delete:
+            if light.delete_tag(
+                    LIGHT_REGISTRY,
+                    _light
+            ):
+                st.success("Successfully Delete")
+                st.experimental_rerun()
+            else:
+                st.warning("Can not delete this tag: maybe already deleted")
+        else:
+            st.error("Please select good tag and confirm deletion by writing light tag")
+
+
 # def air_settings(state):
 #     st.title("Air temperature settings")
 #
