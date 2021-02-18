@@ -17,7 +17,6 @@ def create_tag(api: str, tag=str, _basic_auth: tuple = None) -> bool:
         else:
             return False
     else:
-
         if requests.post(api, data={"tag": tag}).json()['acknowledge']:
             return True
         else:
