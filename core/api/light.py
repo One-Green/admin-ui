@@ -103,8 +103,8 @@ def post_configuration(
     :return:
     """
     _api = os.path.join(api, _tag)
-    config["on_time_at"] = config["on_time_at"].strftime("%H:%M:%S")
-    config["off_time_at"] = config["off_time_at"].strftime("%H:%M:%S")
+    config["on_time_at"]: datetime.datetime = config["on_time_at"].isoformat()
+    config["off_time_at"]: datetime.datetime = config["off_time_at"].isoformat()
     if _basic_auth:
         if requests.post(_api, json=config, basic_auth=_basic_auth).ok:
             return True
