@@ -13,14 +13,18 @@ from settings import *
 from core.api import sprinklers
 from core.api import water
 from core.api import light
+from core.api import glbl
+from core.helpers import apply_timezone_datetime
 import time
 import datetime
+import pytz
 
 
 def main():
     state = _get_state()
     pages = {
         "Home": home,
+        "Global": global_settings,
         "Water tank": water_tank_settings,
         "Sprinklers": sprinklers_settings,
         "Uv Lights": lights_settings,
@@ -41,6 +45,23 @@ def main():
 def home(state):
     st.title("One-Green Admin")
     st.header("Place to configure your IoT devices handled by One-Green Core")
+
+
+def global_settings(state):
+    st.title(":wrench: Global Settings")
+    timezone = st.selectbox(
+        'Time Zone',
+        pytz.all_timezones
+    )
+    if st.button("Save configuration") and glbl.post_configuration(
+            GLOBAL_CONFIGURATION,
+            {
+                "timezone": timezone,
+            }
+    ):
+        st.success("Configuration saved")
+        time.sleep(0.5)
+        st.experimental_rerun()
 
 
 def water_tank_settings(state):
@@ -126,6 +147,12 @@ def lights_settings(state):
     TODO: reduce cognitive complexity
     """
     st.title(":bulb: UV Light Settings")
+    timezone = glbl.get_configuration(GLOBAL_CONFIGURATION)["timezone"]
+    if not timezone:
+        st.error("Timezone is not configured, configure it \"Gobal\" > \"Time zone\" first")
+    else:
+        st.write('Time zone:', timezone)
+
     st.header('Create new light / configure existing')
     lights_tag_list: list = light.get_tags(LIGHT_REGISTRY)
 
@@ -142,14 +169,18 @@ def lights_settings(state):
     tag = st.text_input("Add new tag / configure existing", _light)
     on_time_at = st.time_input("Light on from", light_config["on_time_at"])
     off_time_at = st.time_input("Light on to", light_config["off_time_at"])
+
+    tz_on_time_at = apply_timezone_datetime(timezone, on_time_at)
+    tz_off_time_at = apply_timezone_datetime(timezone, off_time_at)
+
     if st.button("(Create tag and) save light settings"):
         tag_result = light.create_tag(LIGHT_REGISTRY, tag)
         configuration_result = light.post_configuration(
             LIGHT_CONFIGURATION,
             tag,
             config={
-                "on_time_at": on_time_at,
-                "off_time_at": off_time_at
+                "on_time_at": tz_on_time_at,
+                "off_time_at": tz_off_time_at
             }
         )
         if tag_result:
