@@ -19,7 +19,7 @@ entrypoints==0.3
 gitdb==4.0.5
 GitPython==3.1.13
 idna==2.10
-ipykernel==5.4.3
+ipykernel==5.5.0
 ipython==7.20.0
 ipython-genutils==0.2.0
 ipywidgets==7.6.3
@@ -47,7 +47,7 @@ pickleshare==0.7.5
 Pillow==8.1.0
 prometheus-client==0.9.0
 prompt-toolkit==3.0.16
-protobuf==3.14.0
+protobuf==3.15.2
 ptyprocess==0.7.0
 pyarrow==3.0.0
 pycparser==2.20
@@ -62,7 +62,7 @@ requests==2.25.1
 Send2Trash==1.5.0
 six==1.15.0
 smmap==3.0.5
-streamlit==0.76.0
+streamlit==0.77.0
 terminado==0.9.2
 testpath==0.4.4
 toml==0.10.2
@@ -72,7 +72,7 @@ traitlets==5.0.5
 tzlocal==2.1
 urllib3==1.26.3
 validators==0.18.2
-watchdog==2.0.1
+watchdog==2.0.2
 wcwidth==0.2.5
 webencodings==0.5.1
 widgetsnbextension==3.5.1

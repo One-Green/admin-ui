@@ -9,6 +9,7 @@ pandas = "*"
 watchdog = "*"
 
 [dev-packages]
+ipython = "*"
 
 [requires]
 python_version = "3.8"
