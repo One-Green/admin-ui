@@ -14,12 +14,14 @@ def create_tag(api: str, tag=str, _basic_auth: tuple = None) -> bool:
     :return:
     """
     if _basic_auth:
-        if requests.post(api, data={"tag": tag}, basic_auth=_basic_auth).json()['acknowledge']:
+        if requests.post(api, data={"tag": tag}, basic_auth=_basic_auth).json()[
+            "acknowledge"
+        ]:
             return True
         else:
             return False
     else:
-        if requests.post(api, data={"tag": tag}).json()['acknowledge']:
+        if requests.post(api, data={"tag": tag}).json()["acknowledge"]:
             return True
         else:
             return False
@@ -59,11 +61,7 @@ def get_tags(api: str, _basic_auth: tuple = None) -> list:
         return requests.get(api).json()
 
 
-def get_configuration(
-        api: str,
-        sprinkler_tag: str,
-        _basic_auth: tuple = None
-) -> dict:
+def get_configuration(api: str, sprinkler_tag: str, _basic_auth: tuple = None) -> dict:
     """
     Configure a sprinkler with is tag
     :param api:
@@ -78,21 +76,18 @@ def get_configuration(
             r = requests.get(_api, basic_auth=_basic_auth).json()
         else:
             r = requests.get(_api).json()
-        r["on_time_at"] = parser.parse(r["on_time_at"]).time()
-        r["off_time_at"] = parser.parse(r["off_time_at"]).time()
+        r["on_datetime_at"] = parser.parse(r["on_datetime_at"])
+        r["off_datetime_at"] = parser.parse(r["off_datetime_at"])
     except JSONDecodeError:
         r = {
-            "on_time_at": datetime.time(0, 0),
-            "off_time_at": datetime.time(0, 0)
+            "on_datetime_at": datetime.time(0, 0),
+            "off_datetime_at": datetime.time(0, 0),
         }
     return r
 
 
 def post_configuration(
-        api: str,
-        _tag: str,
-        config: dict,
-        _basic_auth: tuple = None
+    api: str, _tag: str, config: dict, _basic_auth: tuple = None
 ) -> bool:
     """
     Configure a sprinkler with is tag
@@ -103,8 +98,8 @@ def post_configuration(
     :return:
     """
     _api = os.path.join(api, _tag)
-    config["on_time_at"]: datetime.datetime = config["on_time_at"].isoformat()
-    config["off_time_at"]: datetime.datetime = config["off_time_at"].isoformat()
+    config["on_datetime_at"]: datetime.datetime = config["on_datetime_at"].isoformat()
+    config["off_datetime_at"]: datetime.datetime = config["off_datetime_at"].isoformat()
     if _basic_auth:
         if requests.post(_api, json=config, basic_auth=_basic_auth).ok:
             return True
