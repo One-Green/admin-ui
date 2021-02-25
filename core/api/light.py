@@ -7,7 +7,10 @@ from core.api import glbl
 from settings import GLOBAL_CONFIGURATION
 import pytz
 
-timezone = glbl.get_configuration(GLOBAL_CONFIGURATION)["timezone"]
+try:
+    timezone = glbl.get_configuration(GLOBAL_CONFIGURATION)["timezone"]
+except KeyError:
+    timezone = "UTC"
 
 
 def create_tag(api: str, tag=str, _basic_auth: tuple = None) -> bool:
