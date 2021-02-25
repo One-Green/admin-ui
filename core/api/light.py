@@ -3,6 +3,11 @@ import requests
 from json.decoder import JSONDecodeError
 import datetime
 from dateutil import parser
+from core.api import glbl
+from settings import GLOBAL_CONFIGURATION
+import pytz
+
+timezone = glbl.get_configuration(GLOBAL_CONFIGURATION)["timezone"]
 
 
 def create_tag(api: str, tag=str, _basic_auth: tuple = None) -> bool:
@@ -76,8 +81,12 @@ def get_configuration(api: str, sprinkler_tag: str, _basic_auth: tuple = None) -
             r = requests.get(_api, basic_auth=_basic_auth).json()
         else:
             r = requests.get(_api).json()
-        r["on_datetime_at"] = parser.parse(r["on_datetime_at"])
-        r["off_datetime_at"] = parser.parse(r["off_datetime_at"])
+        r["on_datetime_at"] = parser.parse(r["on_datetime_at"]).astimezone(
+            pytz.timezone(timezone)
+        )
+        r["off_datetime_at"] = parser.parse(r["off_datetime_at"]).astimezone(
+            pytz.timezone(timezone)
+        )
     except JSONDecodeError:
         r = {
             "on_datetime_at": datetime.time(0, 0),
