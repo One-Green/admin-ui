@@ -147,8 +147,9 @@ def lights_settings(state):
     TODO: reduce cognitive complexity
     """
     st.title(":bulb: UV Light Settings")
-    timezone = glbl.get_configuration(GLOBAL_CONFIGURATION)["timezone"]
-    if not timezone:
+    try:
+        timezone = glbl.get_configuration(GLOBAL_CONFIGURATION)["timezone"]
+    except KeyError:
         st.error("Timezone is not configured, configure it \"Gobal\" > \"Time zone\" first")
     else:
         st.write('Time zone:', timezone)
@@ -162,13 +163,13 @@ def lights_settings(state):
     else:
         _light = st.radio('Available light(s) ', ["not tag found, create a tag "])
         light_config = {
-            "on_time_at": datetime.time(8, 0),
-            "off_time_at": datetime.time(18, 0),
+            "on_datetime_at": datetime.time(8, 0),
+            "off_datetime_at": datetime.time(18, 0),
         }
 
     tag = st.text_input("Add new tag / configure existing", _light)
-    on_time_at = st.time_input("Light on from", light_config["on_time_at"])
-    off_time_at = st.time_input("Light on to", light_config["off_time_at"])
+    on_time_at = st.time_input("Light on from", light_config["on_datetime_at"])
+    off_time_at = st.time_input("Light on to", light_config["off_datetime_at"])
 
     tz_on_time_at = apply_timezone_datetime(timezone, on_time_at)
     tz_off_time_at = apply_timezone_datetime(timezone, off_time_at)
@@ -179,8 +180,8 @@ def lights_settings(state):
             LIGHT_CONFIGURATION,
             tag,
             config={
-                "on_time_at": tz_on_time_at,
-                "off_time_at": tz_off_time_at
+                "on_datetime_at": tz_on_time_at,
+                "off_datetime_at": tz_off_time_at
             }
         )
         if tag_result:
@@ -195,7 +196,7 @@ def lights_settings(state):
 
     st.header('Delete existing tag and configuration')
     confirm_delete = st.text_input("To delete confirm by writing sprinkler tag here")
-    if st.button("Delete this sprinkler"):
+    if st.button("Delete this light"):
         if _light == confirm_delete:
             if light.delete_tag(
                     LIGHT_REGISTRY,
