@@ -91,6 +91,55 @@ def water_tank_settings(state):
         time.sleep(0.5)
         st.experimental_rerun()
 
+    st.header("Force Actuators")
+    force = water.get_configuration(WATER_FORCE_CONTROLLER)
+    st.write(force)
+    col1, col2, col3 = st.beta_columns(3)
+    with col1:
+        st.write("Actuators")
+        force_water_pump_signal = st.checkbox("Force water pump", value=force["force_water_pump_signal"])
+        force_nutrient_pump_signal = st.checkbox("Force nutrient pump", value=force["force_nutrient_pump_signal"])
+        force_ph_downer_pump_signal = st.checkbox("Force pH downer pump", value=force["force_ph_downer_pump_signal"])
+        force_mixer_pump_signal = st.checkbox("Force water mixer pump", value=force["force_mixer_pump_signal"])
+    with col2:
+        st.write("True=ON, False=OFF")
+        water_pump_signal = st.checkbox("Override water pump ", value=force["water_pump_signal"])
+        nutrient_pump_signal = st.checkbox("Override nutrient pump", value=force["nutrient_pump_signal"])
+        ph_downer_pump_signal = st.checkbox("Override pH downer pump", value=force["ph_downer_pump_signal"])
+        mixer_pump_signal = st.checkbox("Override water mixer pump", value=force["mixer_pump_signal"])
+
+    col1, col2 = st.beta_columns(2)
+    with col1:
+        if st.button("Save"):
+            _ = {
+                "force_water_pump_signal": force_water_pump_signal,
+                "force_nutrient_pump_signal": force_nutrient_pump_signal,
+                "force_ph_downer_pump_signal": force_ph_downer_pump_signal,
+                "force_mixer_pump_signal": force_mixer_pump_signal,
+                "water_pump_signal": water_pump_signal,
+                "nutrient_pump_signal": nutrient_pump_signal,
+                "ph_downer_pump_signal": ph_downer_pump_signal,
+                "mixer_pump_signal": mixer_pump_signal,
+            }
+            if water.post_configuration(WATER_FORCE_CONTROLLER, _):
+                st.success("Successfully Forced")
+                st.experimental_rerun()
+    with col2:
+        if st.button("Reset"):
+            _ = {
+                "force_water_pump_signal": False,
+                "force_nutrient_pump_signal": False,
+                "force_ph_downer_pump_signal": False,
+                "force_mixer_pump_signal": False,
+                "water_pump_signal": False,
+                "nutrient_pump_signal": False,
+                "ph_downer_pump_signal": False,
+                "mixer_pump_signal": False,
+            }
+            if water.post_configuration(WATER_FORCE_CONTROLLER, _):
+                st.success("Successfully reset")
+                st.experimental_rerun()
+
 
 def sprinklers_settings(state):
     """
