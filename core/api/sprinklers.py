@@ -109,3 +109,57 @@ def post_configuration(
             return True
         else:
             return False
+
+
+def get_controller_force(
+        api: str,
+        sprinkler_tag: str,
+        _basic_auth: tuple = None
+) -> dict:
+    """
+    Configure a sprinkler with is tag
+    :param api:
+    :param sprinkler_tag:
+    :param config:
+    :param _basic_auth:
+    :return:
+    """
+    _api = os.path.join(api, sprinkler_tag)
+    try:
+        if _basic_auth:
+            return requests.get(_api, basic_auth=_basic_auth).json()
+        else:
+            return requests.get(_api).json()
+    except JSONDecodeError:
+        return {
+            "force_water_valve_signal": False,
+            "water_valve_signal": False
+        }
+
+
+def post_controller_force(
+        api: str,
+        sprinkler_tag: str,
+        config: dict,
+        _basic_auth: tuple = None
+) -> bool:
+    """
+    Configure a sprinkler with is tag
+    :param api:
+    :param sprinkler_tag:
+    :param config:
+    :param _basic_auth:
+    :return:
+    """
+    _api = os.path.join(api, sprinkler_tag)
+
+    if _basic_auth:
+        if requests.post(_api, json=config, basic_auth=_basic_auth).ok:
+            return True
+        else:
+            return False
+    else:
+        if requests.post(_api, json=config).ok:
+            return True
+        else:
+            return False

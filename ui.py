@@ -18,6 +18,7 @@ from core.helpers import apply_timezone_datetime
 import time
 import datetime
 import pytz
+import numpy as np
 
 
 def main():
@@ -67,10 +68,16 @@ def global_settings(state):
 def water_tank_settings(state):
     st.title(":droplet: Water tank Settings")
     water_configuration = water.get_configuration(WATER_CONFIGURATION)
-    tds_min_level = st.text_input("Tds min level (ppm)", water_configuration["tds_min_level"])
-    tds_max_level = st.text_input("Tds max level (ppm)", water_configuration["tds_max_level"])
-    ph_min_level = st.text_input("pH min level", water_configuration["ph_min_level"])
-    ph_max_level = st.text_input("pH max level", water_configuration["ph_max_level"])
+    col1, col2 = st.beta_columns(2)
+    with col1:
+        tds_min_level = st.text_input("Tds min level (ppm)", water_configuration["tds_min_level"])
+    with col2:
+        tds_max_level = st.text_input("Tds max level (ppm)", water_configuration["tds_max_level"])
+    col1, col2 = st.beta_columns(2)
+    with col1:
+        ph_min_level = st.text_input("pH min level", water_configuration["ph_min_level"])
+    with col2:
+        ph_max_level = st.text_input("pH max level", water_configuration["ph_max_level"])
     if st.button("Save configuration") and water.post_configuration(
             WATER_CONFIGURATION,
             {
@@ -104,8 +111,11 @@ def sprinklers_settings(state):
         }
 
     tag = st.text_input("Add new tag / configure existing", sprinkler)
-    min_moisture = st.text_input("Minimum moisture level", sprinkler_config["soil_moisture_min_level"])
-    max_moisture = st.text_input("Maximum moisture level", sprinkler_config["soil_moisture_max_level"])
+    col1, col2 = st.beta_columns(2)
+    with col1:
+        min_moisture = st.text_input("Minimum moisture level", sprinkler_config["soil_moisture_min_level"])
+    with col2:
+        max_moisture = st.text_input("Maximum moisture level", sprinkler_config["soil_moisture_max_level"])
     if st.button("(Create tag and) save sprinkler settings"):
         tag_result = sprinklers.create_tag(SPRINKLER_REGISTRY, tag)
         configuration_result = sprinklers.post_configuration(
@@ -140,6 +150,33 @@ def sprinklers_settings(state):
                 st.warning("Can not delete this tag: maybe already deleted")
         else:
             st.error("Please select good tag and confirm deletion by writing sprinkler tag")
+    st.header("Force Water Valve")
+    force = sprinklers.get_configuration(SPRINKLER_FORCE_CONTROLLER, sprinkler)
+    col1, col2 = st.beta_columns(2)
+    with col1:
+        force_water_valve_signal = st.checkbox("Force Status", value=force["force_water_valve_signal"])
+    with col2:
+        water_valve_signal = st.checkbox("Override (True=ON, False=OFF)", value=force["water_valve_signal"])
+
+    col1, col2 = st.beta_columns(2)
+    with col1:
+        if st.button("Save"):
+            _ = {
+                "force_water_valve_signal": force_water_valve_signal,
+                "water_valve_signal": water_valve_signal
+            }
+            if sprinklers.post_controller_force(SPRINKLER_FORCE_CONTROLLER, sprinkler, _):
+                st.success("Successfully Forced")
+                st.experimental_rerun()
+    with col2:
+        if st.button("Reset"):
+            _ = {
+                "force_water_valve_signal": False,
+                "water_valve_signal": False
+            }
+            if sprinklers.post_controller_force(SPRINKLER_FORCE_CONTROLLER, sprinkler, _):
+                st.success("Successfully force reset")
+                st.experimental_rerun()
 
 
 def lights_settings(state):
@@ -168,8 +205,12 @@ def lights_settings(state):
         }
 
     tag = st.text_input("Add new tag / configure existing", _light)
-    on_time_at = st.time_input("Light on from", light_config["on_datetime_at"])
-    off_time_at = st.time_input("Light on to", light_config["off_datetime_at"])
+    col1, col2 = st.beta_columns(2)
+
+    with col1:
+        on_time_at = st.time_input("Light on from", light_config["on_datetime_at"])
+    with col2:
+        off_time_at = st.time_input("Light on to", light_config["off_datetime_at"])
 
     tz_on_time_at = apply_timezone_datetime(timezone, on_time_at)
     tz_off_time_at = apply_timezone_datetime(timezone, off_time_at)
