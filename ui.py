@@ -207,6 +207,10 @@ def sprinklers_settings(state):
         water_valve_signal = st.checkbox("Override (True=ON, False=OFF)", value=force["water_valve_signal"])
 
     col1, col2 = st.beta_columns(2)
+    post_response = {
+        "type": "not_set",
+        "status": False
+    }
     with col1:
         if st.button("Save"):
             _ = {
@@ -214,8 +218,9 @@ def sprinklers_settings(state):
                 "water_valve_signal": water_valve_signal
             }
             if sprinklers.post_controller_force(SPRINKLER_FORCE_CONTROLLER, sprinkler, _):
-                st.success("Successfully Forced")
-                st.experimental_rerun()
+                post_response["type"] = "config"
+                post_response["status"] = True
+
     with col2:
         if st.button("Reset"):
             _ = {
@@ -223,8 +228,16 @@ def sprinklers_settings(state):
                 "water_valve_signal": False
             }
             if sprinklers.post_controller_force(SPRINKLER_FORCE_CONTROLLER, sprinkler, _):
-                st.success("Successfully force reset")
-                st.experimental_rerun()
+                post_response["type"] = "reset"
+                post_response["status"] = True
+
+    if post_response["status"]:
+        if post_response["type"] == "config":
+            st.success("Successfully Forced")
+        elif post_response["type"] == "reset":
+            st.success("Successfully force reset")
+        time.sleep(0.5)
+        st.experimental_rerun()
 
 
 def lights_settings(state):
