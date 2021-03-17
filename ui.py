@@ -18,7 +18,6 @@ from core.helpers import apply_timezone_datetime
 import time
 import datetime
 import pytz
-import numpy as np
 
 
 def main():
