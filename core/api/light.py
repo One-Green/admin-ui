@@ -7,11 +7,6 @@ from core.api import glbl
 from settings import GLOBAL_CONFIGURATION
 import pytz
 
-try:
-    timezone = glbl.get_configuration(GLOBAL_CONFIGURATION)["timezone"]
-except KeyError:
-    timezone = "UTC"
-
 
 def create_tag(api: str, tag=str, _basic_auth: tuple = None) -> bool:
     """
@@ -69,16 +64,21 @@ def get_tags(api: str, _basic_auth: tuple = None) -> list:
         return requests.get(api).json()
 
 
-def get_configuration(api: str, sprinkler_tag: str, _basic_auth: tuple = None) -> dict:
+def get_configuration(
+        api: str,
+        _tag: str,
+        _basic_auth: tuple = None
+) -> dict:
     """
     Configure a sprinkler with is tag
     :param api:
-    :param sprinkler_tag:
-    :param config:
+    :param _tag:
     :param _basic_auth:
     :return:
     """
-    _api = os.path.join(api, sprinkler_tag)
+    _api = os.path.join(api, _tag)
+    timezone = glbl.get_configuration(GLOBAL_CONFIGURATION)["timezone"]
+
     try:
         if _basic_auth:
             r = requests.get(_api, basic_auth=_basic_auth).json()
