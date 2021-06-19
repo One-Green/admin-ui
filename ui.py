@@ -50,7 +50,7 @@ def home(state):
 def global_settings(state):
     st.title(":wrench: Global Settings")
     r = glbl.get_configuration(GLOBAL_CONFIGURATION)
-    if r["timezone"]:
+    if "timezone" in r.keys():
         timezone = st.selectbox(
             'Time Zone',
             pytz.all_timezones,
