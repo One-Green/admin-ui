@@ -10,8 +10,5 @@ def apply_timezone_datetime(_local_tz: str, _time: datetime.time):
     :return:
     """
     return pytz.timezone(_local_tz).localize(
-        datetime.datetime.combine(
-            datetime.datetime.now().date(),
-            _time
-        )
+        datetime.datetime.combine(datetime.datetime.now().date(), _time)
     )

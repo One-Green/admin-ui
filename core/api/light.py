@@ -17,7 +17,7 @@ def create_tag(api: str, tag=str, _basic_auth: tuple = None) -> bool:
     :return:
     """
     if _basic_auth:
-        if requests.post(api, data={"tag": tag}, basic_auth=_basic_auth).json()[
+        if requests.post(api, data={"tag": tag}, auth=_basic_auth).json()[
             "acknowledge"
         ]:
             return True
@@ -40,7 +40,7 @@ def delete_tag(api: str, tag=str, _basic_auth: tuple = None) -> bool:
     """
 
     if _basic_auth:
-        if requests.delete(api, data={"tag": tag}, basic_auth=_basic_auth).ok:
+        if requests.delete(api, data={"tag": tag}, auth=_basic_auth).ok:
             return True
         else:
             return False
@@ -59,16 +59,12 @@ def get_tags(api: str, _basic_auth: tuple = None) -> list:
     :return:
     """
     if _basic_auth:
-        return requests.get(api, basic_auth=_basic_auth).json()
+        return requests.get(api, auth=_basic_auth).json()
     else:
         return requests.get(api).json()
 
 
-def get_configuration(
-        api: str,
-        _tag: str,
-        _basic_auth: tuple = None
-) -> dict:
+def get_configuration(api: str, _tag: str, _basic_auth: tuple = None) -> dict:
     """
     Configure a sprinkler with is tag
     :param api:
@@ -81,7 +77,7 @@ def get_configuration(
 
     try:
         if _basic_auth:
-            r = requests.get(_api, basic_auth=_basic_auth).json()
+            r = requests.get(_api, auth=_basic_auth).json()
         else:
             r = requests.get(_api).json()
         r["on_datetime_at"] = parser.parse(r["on_datetime_at"]).astimezone(
@@ -113,7 +109,7 @@ def post_configuration(
     config["on_datetime_at"]: datetime.datetime = config["on_datetime_at"].isoformat()
     config["off_datetime_at"]: datetime.datetime = config["off_datetime_at"].isoformat()
     if _basic_auth:
-        if requests.post(_api, json=config, basic_auth=_basic_auth).ok:
+        if requests.post(_api, json=config, auth=_basic_auth).ok:
             return True
         else:
             return False
