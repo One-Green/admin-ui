@@ -52,20 +52,17 @@ def global_settings(state):
     r = glbl.get_configuration(GLOBAL_CONFIGURATION)
     if "timezone" in r.keys():
         timezone = st.selectbox(
-            'Time Zone',
+            "Time Zone",
             pytz.all_timezones,
-            index=pytz.all_timezones.index(r["timezone"])
+            index=pytz.all_timezones.index(r["timezone"]),
         )
     else:
-        timezone = st.selectbox(
-            'Time Zone',
-            pytz.all_timezones
-        )
+        timezone = st.selectbox("Time Zone", pytz.all_timezones)
     if st.button("Save configuration") and glbl.post_configuration(
-            GLOBAL_CONFIGURATION,
-            {
-                "timezone": timezone,
-            }
+        GLOBAL_CONFIGURATION,
+        {
+            "timezone": timezone,
+        },
     ):
         st.success("Configuration saved")
         time.sleep(0.5)
@@ -75,24 +72,32 @@ def global_settings(state):
 def water_tank_settings(state):
     st.title(":droplet: Water tank Settings")
     water_configuration = water.get_configuration(WATER_CONFIGURATION)
-    col1, col2 = st.beta_columns(2)
+    col1, col2 = st.columns(2)
     with col1:
-        tds_min_level = st.text_input("Tds min level (ppm)", water_configuration["tds_min_level"])
+        tds_min_level = st.text_input(
+            "Tds min level (ppm)", water_configuration["tds_min_level"]
+        )
     with col2:
-        tds_max_level = st.text_input("Tds max level (ppm)", water_configuration["tds_max_level"])
-    col1, col2 = st.beta_columns(2)
+        tds_max_level = st.text_input(
+            "Tds max level (ppm)", water_configuration["tds_max_level"]
+        )
+    col1, col2 = st.columns(2)
     with col1:
-        ph_min_level = st.text_input("pH min level", water_configuration["ph_min_level"])
+        ph_min_level = st.text_input(
+            "pH min level", water_configuration["ph_min_level"]
+        )
     with col2:
-        ph_max_level = st.text_input("pH max level", water_configuration["ph_max_level"])
+        ph_max_level = st.text_input(
+            "pH max level", water_configuration["ph_max_level"]
+        )
     if st.button("Save configuration") and water.post_configuration(
-            WATER_CONFIGURATION,
-            {
-                "tds_min_level": float(tds_min_level),
-                "tds_max_level": float(tds_max_level),
-                "ph_min_level": float(ph_min_level),
-                "ph_max_level": float(ph_max_level)
-            }
+        WATER_CONFIGURATION,
+        {
+            "tds_min_level": float(tds_min_level),
+            "tds_max_level": float(tds_max_level),
+            "ph_min_level": float(ph_min_level),
+            "ph_max_level": float(ph_max_level),
+        },
     ):
         st.success("Configuration saved")
         time.sleep(0.5)
@@ -101,21 +106,37 @@ def water_tank_settings(state):
     st.header("Force Actuators")
     force = water.get_configuration(WATER_FORCE_CONTROLLER)
     st.write(force)
-    col1, col2, col3 = st.beta_columns(3)
+    col1, col2, col3 = st.columns(3)
     with col1:
         st.write("Actuators")
-        force_water_pump_signal = st.checkbox("Force water pump", value=force["force_water_pump_signal"])
-        force_nutrient_pump_signal = st.checkbox("Force nutrient pump", value=force["force_nutrient_pump_signal"])
-        force_ph_downer_pump_signal = st.checkbox("Force pH downer pump", value=force["force_ph_downer_pump_signal"])
-        force_mixer_pump_signal = st.checkbox("Force water mixer pump", value=force["force_mixer_pump_signal"])
+        force_water_pump_signal = st.checkbox(
+            "Force water pump", value=force["force_water_pump_signal"]
+        )
+        force_nutrient_pump_signal = st.checkbox(
+            "Force nutrient pump", value=force["force_nutrient_pump_signal"]
+        )
+        force_ph_downer_pump_signal = st.checkbox(
+            "Force pH downer pump", value=force["force_ph_downer_pump_signal"]
+        )
+        force_mixer_pump_signal = st.checkbox(
+            "Force water mixer pump", value=force["force_mixer_pump_signal"]
+        )
     with col2:
         st.write("True=ON, False=OFF")
-        water_pump_signal = st.checkbox("Override water pump ", value=force["water_pump_signal"])
-        nutrient_pump_signal = st.checkbox("Override nutrient pump", value=force["nutrient_pump_signal"])
-        ph_downer_pump_signal = st.checkbox("Override pH downer pump", value=force["ph_downer_pump_signal"])
-        mixer_pump_signal = st.checkbox("Override water mixer pump", value=force["mixer_pump_signal"])
+        water_pump_signal = st.checkbox(
+            "Override water pump ", value=force["water_pump_signal"]
+        )
+        nutrient_pump_signal = st.checkbox(
+            "Override nutrient pump", value=force["nutrient_pump_signal"]
+        )
+        ph_downer_pump_signal = st.checkbox(
+            "Override pH downer pump", value=force["ph_downer_pump_signal"]
+        )
+        mixer_pump_signal = st.checkbox(
+            "Override water mixer pump", value=force["mixer_pump_signal"]
+        )
 
-    col1, col2 = st.beta_columns(2)
+    col1, col2 = st.columns(2)
     with col1:
         if st.button("Save"):
             _ = {
@@ -153,25 +174,33 @@ def sprinklers_settings(state):
     TODO: reduce cognitive complexity
     """
     st.title(":potable_water: Sprinklers Settings")
-    st.header('Create new sprinkler / configure existing')
+    st.header("Create new sprinkler / configure existing")
     sprinklers_tag_list: list = sprinklers.get_tags(SPRINKLER_REGISTRY)
 
     if sprinklers_tag_list:
-        sprinkler = st.radio('Available sprinkler(s) ', sprinklers_tag_list)
-        sprinkler_config = sprinklers.get_configuration(SPRINKLER_CONFIGURATION, sprinkler)
+        sprinkler = st.radio("Available sprinkler(s) ", sprinklers_tag_list)
+        sprinkler_config = sprinklers.get_configuration(
+            SPRINKLER_CONFIGURATION, sprinkler
+        )
     else:
-        sprinkler = st.radio('Available sprinkler(s) ', ["not tag found, create a tag "])
+        sprinkler = st.radio(
+            "Available sprinkler(s) ", ["not tag found, create a tag "]
+        )
         sprinkler_config = {
-            "soil_moisture_min_level": 20.,
-            "soil_moisture_max_level": 70.
+            "soil_moisture_min_level": 20.0,
+            "soil_moisture_max_level": 70.0,
         }
 
     tag = st.text_input("Add new tag / configure existing", sprinkler)
-    col1, col2 = st.beta_columns(2)
+    col1, col2 = st.columns(2)
     with col1:
-        min_moisture = st.text_input("Minimum moisture level", sprinkler_config["soil_moisture_min_level"])
+        min_moisture = st.text_input(
+            "Minimum moisture level", sprinkler_config["soil_moisture_min_level"]
+        )
     with col2:
-        max_moisture = st.text_input("Maximum moisture level", sprinkler_config["soil_moisture_max_level"])
+        max_moisture = st.text_input(
+            "Maximum moisture level", sprinkler_config["soil_moisture_max_level"]
+        )
     if st.button("(Create tag and) save sprinkler settings"):
         tag_result = sprinklers.create_tag(SPRINKLER_REGISTRY, tag)
         configuration_result = sprinklers.post_configuration(
@@ -179,8 +208,8 @@ def sprinklers_settings(state):
             tag,
             config={
                 "soil_moisture_min_level": float(min_moisture),
-                "soil_moisture_max_level": float(max_moisture)
-            }
+                "soil_moisture_max_level": float(max_moisture),
+            },
         )
         if tag_result:
             time.sleep(0.5)
@@ -192,50 +221,51 @@ def sprinklers_settings(state):
         else:
             st.error("Can not save this configuration")
 
-    st.header('Delete existing tag and configuration')
+    st.header("Delete existing tag and configuration")
     confirm_delete = st.text_input("To delete confirm by writing sprinkler tag here")
     if st.button("Delete this sprinkler"):
         if sprinkler == confirm_delete:
-            if sprinklers.delete_tag(
-                    SPRINKLER_REGISTRY,
-                    sprinkler
-            ):
+            if sprinklers.delete_tag(SPRINKLER_REGISTRY, sprinkler):
                 st.success("Successfully Delete")
                 st.experimental_rerun()
             else:
                 st.warning("Can not delete this tag: maybe already deleted")
         else:
-            st.error("Please select good tag and confirm deletion by writing sprinkler tag")
+            st.error(
+                "Please select good tag and confirm deletion by writing sprinkler tag"
+            )
     st.header("Force Water Valve")
     force = sprinklers.get_configuration(SPRINKLER_FORCE_CONTROLLER, sprinkler)
-    col1, col2 = st.beta_columns(2)
+    col1, col2 = st.columns(2)
     with col1:
-        force_water_valve_signal = st.checkbox("Force Status", value=force["force_water_valve_signal"])
+        force_water_valve_signal = st.checkbox(
+            "Force Status", value=force["force_water_valve_signal"]
+        )
     with col2:
-        water_valve_signal = st.checkbox("Override (True=ON, False=OFF)", value=force["water_valve_signal"])
+        water_valve_signal = st.checkbox(
+            "Override (True=ON, False=OFF)", value=force["water_valve_signal"]
+        )
 
-    col1, col2 = st.beta_columns(2)
-    post_response = {
-        "type": "not_set",
-        "status": False
-    }
+    col1, col2 = st.columns(2)
+    post_response = {"type": "not_set", "status": False}
     with col1:
         if st.button("Save"):
             _ = {
                 "force_water_valve_signal": force_water_valve_signal,
-                "water_valve_signal": water_valve_signal
+                "water_valve_signal": water_valve_signal,
             }
-            if sprinklers.post_controller_force(SPRINKLER_FORCE_CONTROLLER, sprinkler, _):
+            if sprinklers.post_controller_force(
+                SPRINKLER_FORCE_CONTROLLER, sprinkler, _
+            ):
                 post_response["type"] = "config"
                 post_response["status"] = True
 
     with col2:
         if st.button("Reset"):
-            _ = {
-                "force_water_valve_signal": False,
-                "water_valve_signal": False
-            }
-            if sprinklers.post_controller_force(SPRINKLER_FORCE_CONTROLLER, sprinkler, _):
+            _ = {"force_water_valve_signal": False, "water_valve_signal": False}
+            if sprinklers.post_controller_force(
+                SPRINKLER_FORCE_CONTROLLER, sprinkler, _
+            ):
                 post_response["type"] = "reset"
                 post_response["status"] = True
 
@@ -256,25 +286,25 @@ def lights_settings(state):
     try:
         timezone = glbl.get_configuration(GLOBAL_CONFIGURATION)["timezone"]
     except KeyError:
-        st.error("Timezone is not configured, configure it \"Gobal\" > \"Time zone\" first")
+        st.error('Timezone is not configured, configure it "Gobal" > "Time zone" first')
     else:
-        st.write('Time zone:', timezone)
+        st.write("Time zone:", timezone)
 
-    st.header('Create new light / configure existing')
+    st.header("Create new light / configure existing")
     lights_tag_list: list = light.get_tags(LIGHT_REGISTRY)
 
     if lights_tag_list:
-        _light = st.radio('Available light(s) ', lights_tag_list)
+        _light = st.radio("Available light(s) ", lights_tag_list)
         light_config = light.get_configuration(LIGHT_CONFIGURATION, _light)
     else:
-        _light = st.radio('Available light(s) ', ["not tag found, create a tag "])
+        _light = st.radio("Available light(s) ", ["not tag found, create a tag "])
         light_config = {
             "on_datetime_at": datetime.time(8, 0),
             "off_datetime_at": datetime.time(18, 0),
         }
 
     tag = st.text_input("Add new tag / configure existing", _light)
-    col1, col2 = st.beta_columns(2)
+    col1, col2 = st.columns(2)
 
     with col1:
         on_time_at = st.time_input("Light on from", light_config["on_datetime_at"])
@@ -289,10 +319,7 @@ def lights_settings(state):
         configuration_result = light.post_configuration(
             LIGHT_CONFIGURATION,
             tag,
-            config={
-                "on_datetime_at": tz_on_time_at,
-                "off_datetime_at": tz_off_time_at
-            }
+            config={"on_datetime_at": tz_on_time_at, "off_datetime_at": tz_off_time_at},
         )
         if tag_result:
             time.sleep(0.5)
@@ -304,14 +331,11 @@ def lights_settings(state):
         else:
             st.error("Can not save this configuration")
 
-    st.header('Delete existing tag and configuration')
+    st.header("Delete existing tag and configuration")
     confirm_delete = st.text_input("To delete confirm by writing sprinkler tag here")
     if st.button("Delete this light"):
         if _light == confirm_delete:
-            if light.delete_tag(
-                    LIGHT_REGISTRY,
-                    _light
-            ):
+            if light.delete_tag(LIGHT_REGISTRY, _light):
                 st.success("Successfully Delete")
                 st.experimental_rerun()
             else:
@@ -329,7 +353,6 @@ def lights_settings(state):
 
 
 class _SessionState:
-
     def __init__(self, session, hash_funcs):
         """Initialize SessionState instance."""
         self.__dict__["_state"] = {
@@ -378,7 +401,9 @@ class _SessionState:
             self._state["is_rerun"] = False
 
         elif self._state["hash"] is not None:
-            if self._state["hash"] != self._state["hasher"].to_bytes(self._state["data"], None):
+            if self._state["hash"] != self._state["hasher"].to_bytes(
+                self._state["data"], None
+            ):
                 self._state["is_rerun"] = True
                 self._state["session"].request_rerun()
 
